@@ -15,10 +15,10 @@ public class TestApp {
 
         Random random = new Random();
 
-        for(int i =1; i< 50; i++) {
+        for(int i= 1; i<= 50; i++) {
             testApp.insertStudentRec(testApp.studentHashTable,
-                    new StudentRecord("2018" + getRandomDept(random) + i,
-                            getRandomCGPA(random)));
+                    "2018" + getRandomDept(random) + i,
+                            getRandomCGPA(random));
         }
     }
 
@@ -46,8 +46,8 @@ public class TestApp {
         return result;
     }
 
-    public void insertStudentRec(StudentHashTable studentHashTable, StudentRecord studentRecord) {
-        studentHashTable.put(studentRecord);
+    public void insertStudentRec(StudentHashTable studentHashTable, String studentId, float value) {
+        studentHashTable.put(studentId, value);
     }
 
     public List<StudentRecord> hallOfFame(StudentHashTable studentHashTable, float cgpa) {
