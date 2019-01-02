@@ -40,6 +40,11 @@ public class StudentHash {
 
     public void put(StudentRecord studentRecord) {
         put(studentRecord, studentRecordTable);
+        //TODO: should we use bucketSize instead of totalRecords ?
+        //given that we have hashed based on year and dept code, 
+        //all the stud records of same year and dept are in the same bucket even after rehashing
+        //this way we can initial table size (initHash) with lower prime number say 101 instead of 1000 
+        // and segmentation fault may be avoided ?
         if(totalRecords/tableSize > 0.75) {
             reHash();
         }

@@ -39,6 +39,7 @@ public class StudentRecords {
 
 
     private void initHashTable() {
+    	//TODO: Shouldnt this N be a prime number to avoid collision ?
         studentHashTable = new StudentHash(1000);
     }
 
@@ -154,6 +155,8 @@ public class StudentRecords {
 
     }
 
+    //TODO: what is this method ? Is it there in the assignment ?
+    //Also should we add destroyHash here ? like the initHash
     public void getGreatAlumnai(StudentHash studentHashTable, float cgpa) {
 
         List<StudentHash.StudentRecord> greatAlumnai = new LinkedList<>();
@@ -174,6 +177,27 @@ public class StudentRecords {
 
     private int getAdmissionYear(String studentId) {
         return Integer.valueOf(studentId.substring(0, 4));
+    }
+    
+    private static BufferedReader getInputFileReader() throws FileNotFoundException {
+        URL resource = ClassLoader.getSystemClassLoader().getResource("input/Input.txt");
+        File file = new File(resource.getPath());
+        BufferedReader bfr = new BufferedReader(new FileReader(file));
+        return bfr;
+    }
+
+    private static void generateInput() throws FileNotFoundException {
+
+        Random random = new Random();
+        PrintWriter pw = new PrintWriter(new File("D:/Input.txt"));
+        for (int i = 1; i <= 4; i++) {
+            int r = 1000;
+            for (int j = 1000; j <= 9999; j++) {
+                String line = getRandomYear() + getRandomDept(i) + r++ + "," + getRandomCGPA(random);
+                pw.println(line);
+            }
+        }
+        pw.close();
     }
 
     public static String getRandomDept(int i) {
@@ -200,28 +224,6 @@ public class StudentRecords {
     private static int getRandomYear() {
         int i = 2000 + (int) (Math.random() * (2019 - 2000) + 1);
         return i;
-    }
-
-
-    private static BufferedReader getInputFileReader() throws FileNotFoundException {
-        URL resource = ClassLoader.getSystemClassLoader().getResource("input/Input.txt");
-        File file = new File(resource.getPath());
-        BufferedReader bfr = new BufferedReader(new FileReader(file));
-        return bfr;
-    }
-
-    private static void generateInput() throws FileNotFoundException {
-
-        Random random = new Random();
-        PrintWriter pw = new PrintWriter(new File("D:/Input.txt"));
-        for (int i = 1; i <= 4; i++) {
-            int r = 1000;
-            for (int j = 1000; j <= 9999; j++) {
-                String line = getRandomYear() + getRandomDept(i) + r++ + "," + getRandomCGPA(random);
-                pw.println(line);
-            }
-        }
-        pw.close();
     }
 
 }
