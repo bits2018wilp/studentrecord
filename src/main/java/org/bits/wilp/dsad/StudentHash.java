@@ -16,7 +16,7 @@ public class StudentHash {
     }
 
     public StudentRecord get(String studentId) {
-        int tableIndex = getTableIndex(HashId(studentId));
+        int tableIndex = getTableIndex(new StudentRecord(studentId, 0).hashCode());
         List<StudentRecord> studentRecordList = studentRecordTable[tableIndex];
 
         StudentRecord studentRecord = null;
@@ -40,15 +40,13 @@ public class StudentHash {
 
     public void put(StudentRecord studentRecord) {
         put(studentRecord, studentRecordTable);
-      //  System.out.println("TotalRecords: "+ totalRecords + " LoadFactor: "+ (totalRecords/tableSize) +" wasteFactor: "+ ( (tableSize-bucketUsed)/tableSize ));
         if(totalRecords/tableSize > 0.75) {
             reHash();
         }
     }
 
     public void put(StudentRecord studentRecord, List<StudentRecord>[] studentRecordTable) {
-
-       // System.out.println("inserting: "+ studentRecord);
+    	
         int index = getTableIndex(studentRecord.hashCode());
         List<StudentRecord> studentRecordList = null;
 
@@ -56,7 +54,6 @@ public class StudentHash {
         if(studentRecordList == null) {
             studentRecordList = new LinkedList<>();
             studentRecordTable[index] = studentRecordList;
-           // System.out.println("bucket "+ index +" initialized..");
             bucketUsed++;
         }
         studentRecordList.add(studentRecord);
@@ -77,6 +74,7 @@ public class StudentHash {
     }
 
     private int getTableIndex(int hashCode) {
+    	//Compression Map
         return (Math.abs(hashCode)%tableSize);
     }
 
@@ -86,8 +84,6 @@ public class StudentHash {
         totalRecords =0;
         bucketUsed = 0.0f;
         List<StudentRecord> tmp[] = new LinkedList[tableSize];
-
-       // System.out.println("rehashing " + (rehashCount++) + " with Size=  " + studentRecordTable.length);
 
         for(List<StudentRecord> list : studentRecordTable) {
             if(list != null) {
@@ -101,12 +97,6 @@ public class StudentHash {
 
     public void deleteAll() {
         studentRecordTable = null;
-    }
-
-
-    public int HashId(String studentId) {
-
-        return Objects.hash(studentId); // hashing only on year & dept code
     }
 
     public Iterator<StudentRecord> getElementsIterator() {
@@ -161,7 +151,40 @@ public class StudentHash {
 
         @Override
         public int hashCode() {
-            return HashId(studentId);
+        	if(studentId == null || studentId.length() < 8) {
+        		return -1;
+        	}
+        	int yearPart = Integer.parseInt(studentId.substring(0, 4));
+        	String deptCode = studentId.substring(4, 7);
+        	
+        	//Hash Code section
+        	int polynomialConst = 33;
+        	int hashCode = 0;
+        	
+        	// using the polynomial only for the department part because polynomial is done with finite bit representation 
+        	// and the value might overflow for higher powers of polynomialConst  
+        	for(int i =0; i < deptCode.length() -1; i++) {
+        		hashCode += ((int)deptCode.charAt(i) * Math.pow(polynomialConst, deptCode.length() - (i+1)));
+        	}
+        	//finally adding the year part so that the dept of subsequent years has different hashCode values
+        	hashCode += yearPart;
+        	
+            return hashCode;
+        }
+        
+        @Override
+        public boolean equals(Object inRecord) {
+        	
+        	if(inRecord == null || !(inRecord instanceof StudentRecord)) {
+        		return false;
+        	} else {
+        		StudentRecord inStudRecord = (StudentRecord) inRecord;
+        		if(inStudRecord.getStudentId() == null) {
+        			return false;
+        		} else {
+        			return inStudRecord.getStudentId().equals(this.studentId);
+        		}
+        	}
         }
 
         public String getStudentId() {
