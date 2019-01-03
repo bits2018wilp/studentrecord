@@ -40,6 +40,7 @@ public class StudentRecords {
 
     private void initHashTable() {
     	//TODO: Shouldnt this N be a prime number to avoid collision ?
+        //KASIF: yeah we can start with that to minimize collission.
         studentHashTable = new StudentHash(1000);
     }
 
@@ -156,6 +157,7 @@ public class StudentRecords {
     }
 
     //TODO: what is this method ? Is it there in the assignment ?
+    //KASIF:  not required. we can remove it.
     //Also should we add destroyHash here ? like the initHash
     public void getGreatAlumnai(StudentHash studentHashTable, float cgpa) {
 
