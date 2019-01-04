@@ -33,15 +33,14 @@ public class StudentRecords {
 
         studentRecords.getDeptWiseMaxAvg(studentRecords.studentHashTable);
 
-        //studentRecords.getGreatAlumnai(studentRecords.studentHashTable, 7.0f);
+        studentRecords.destroyHash(studentRecords.studentHashTable);
 
     }
-
 
     private void initHashTable() {
     	//TODO: Shouldnt this N be a prime number to avoid collision ?
         //KASIF: yeah we can start with that to minimize collission.
-        studentHashTable = new StudentHash(1000);
+        studentHashTable = new StudentHash(31);
     }
 
 
@@ -87,7 +86,6 @@ public class StudentRecords {
         }
         pw.close();
         System.out.println("new course offering has " + newCourse.size() + " records. Output is available at: "+ courseOfferFile);
-
     }
 
     public void getDeptWiseMaxAvg(StudentHash studentHashTable) throws FileNotFoundException {
@@ -153,24 +151,6 @@ public class StudentRecords {
         pw.close();
 
         System.out.println("Dept wise Max/Avg Output is available at: "+ departmentAverageFile);
-
-    }
-
-    //TODO: what is this method ? Is it there in the assignment ?
-    //KASIF:  not required. we can remove it.
-    //Also should we add destroyHash here ? like the initHash
-    public void getGreatAlumnai(StudentHash studentHashTable, float cgpa) {
-
-        List<StudentHash.StudentRecord> greatAlumnai = new LinkedList<>();
-
-        Iterator<StudentHash.StudentRecord> elementsIterator = studentHashTable.getElementsIterator();
-        while (elementsIterator.hasNext()) {
-            StudentHash.StudentRecord studentRecord = elementsIterator.next();
-            if (studentRecord.getCgpa() > cgpa) {
-                greatAlumnai.add(studentRecord);
-            }
-        }
-        System.out.println("\n greatAlumnai: " + greatAlumnai);
     }
 
     public String getDeptCode(String studentID) {
@@ -202,6 +182,10 @@ public class StudentRecords {
         pw.close();
     }
 
+    public  void destroyHash(StudentHash studentHash) {
+        studentHash.deleteAll();
+    }
+
     public static String getRandomDept(int i) {
         //   int i = 1 + (int)(Math.random() * (4-0) + 1);
 
@@ -227,5 +211,4 @@ public class StudentRecords {
         int i = 2000 + (int) (Math.random() * (2019 - 2000) + 1);
         return i;
     }
-
 }
