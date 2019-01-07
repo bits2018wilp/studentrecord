@@ -15,6 +15,18 @@ public class StudentHash {
         studentRecordTable = new LinkedList[tableSize];
     }
 
+    public int size() {
+        return Float.valueOf(totalRecords).intValue();
+    }
+
+    public int getRehashCount() {
+        return rehashCount;
+    }
+
+    public float getBucketUsed() {
+        return bucketUsed;
+    }
+
     public StudentRecord get(String studentId) {
         int tableIndex = getTableIndex(new StudentRecord(studentId, 0).hashCode());
         List<StudentRecord> studentRecordList = studentRecordTable[tableIndex];
@@ -28,18 +40,15 @@ public class StudentHash {
                 }
             }
         }
-        if(studentRecord == null) {
-            throw  new NoSuchElementException("record not found for "+ studentId);
-        }
         return studentRecord;
     }
 
-    public void put(String key, float value) {
-        put(new StudentRecord(key, value));
+    public boolean put(String key, float value) {
+        return put(new StudentRecord(key, value));
     }
 
-    public void put(StudentRecord studentRecord) {
-        put(studentRecord, studentRecordTable);
+    public boolean put(StudentRecord studentRecord) {
+        boolean put = put(studentRecord, studentRecordTable);
         //TODO: should we use bucketSize instead of totalRecords ?
 
         //KASIF: loadfactor is n/N where n is total number of records across all buckets. we can take bucketSize but
@@ -52,10 +61,12 @@ public class StudentHash {
         // and segmentation fault may be avoided ?
         if(totalRecords/tableSize > 0.75) {
             reHash();
+            rehashCount++;
         }
+        return put;
     }
 
-    public void put(StudentRecord studentRecord, List<StudentRecord>[] studentRecordTable) {
+    public boolean put(StudentRecord studentRecord, List<StudentRecord>[] studentRecordTable) {
     	
         int index = getTableIndex(studentRecord.hashCode());
         List<StudentRecord> studentRecordList = null;
@@ -66,16 +77,55 @@ public class StudentHash {
             studentRecordTable[index] = studentRecordList;
             bucketUsed++;
         }
+        for(StudentRecord sr : studentRecordList) {
+            if(sr.studentId.equals(studentRecord.studentId)) {
+                if(sr.getCgpa() == studentRecord.getCgpa()) {
+                    return false;
+                }
+                else {
+                    sr.setCgpa(studentRecord.getCgpa());
+                    return true;
+                }
+            }
+        }
         studentRecordList.add(studentRecord);
         totalRecords++;
+        return true;
+    }
+
+    public StudentRecord remove(String studentId) {
+
+        int index = getTableIndex(HashId(studentId));
+        List<StudentRecord> studentRecordList = null;
+
+        studentRecordList = studentRecordTable[index];
+        if(studentRecordList == null) {
+            studentRecordList = new LinkedList<>();
+            studentRecordTable[index] = studentRecordList;
+            bucketUsed++;
+        }
+        StudentRecord sr = null;
+        int rindex =-1;
+        for( StudentRecord tmp : studentRecordList) {
+            rindex++;
+            if(tmp.studentId.equals(studentId)) {
+                sr = tmp;
+                break;
+            }
+        }
+        if(sr != null) {
+            studentRecordList.remove(rindex);
+        }
+        totalRecords--;
+        return sr;
     }
 
     public List<String> getAllKeys() {
         List<String> keys = new LinkedList<>();
 
-        for(List<StudentRecord> list : studentRecordTable) {
-            if(list != null) {
-                for(StudentRecord str : list) {
+        for(List<StudentRecord> set : studentRecordTable) {
+            if(set != null) {
+                for(StudentRecord str : set) {
                     keys.add(str.getStudentId());
                 }
             }
@@ -95,9 +145,9 @@ public class StudentHash {
         bucketUsed = 0.0f;
         List<StudentRecord> tmp[] = new LinkedList[tableSize];
 
-        for(List<StudentRecord> list : studentRecordTable) {
-            if(list != null) {
-                for(StudentRecord studentRecord : list) {
+        for(List<StudentRecord> set : studentRecordTable) {
+            if(set != null) {
+                for(StudentRecord studentRecord : set) {
                     put(studentRecord, tmp);
                 }
             }
@@ -113,40 +163,71 @@ public class StudentHash {
             return new RecordIterator(studentRecordTable);
     }
 
+    public int HashId(String studentId) {
+        if(studentId == null || studentId.length() < 8) {
+            return -1;
+        }
+        int yearPart = Integer.parseInt(studentId.substring(0, 4));
+        String deptCode = studentId.substring(4, 7);
+
+        //Hash Code section
+        int polynomialConst = 33;
+        int hashCode = 0;
+
+        // using the polynomial only for the department part because polynomial is done with finite bit representation
+        // and the value might overflow for higher powers of polynomialConst
+        for(int i =0; i < deptCode.length() -1; i++) {
+            hashCode += ((int)deptCode.charAt(i) * Math.pow(polynomialConst, deptCode.length() - (i+1)));
+        }
+        //finally adding the year part so that the dept of subsequent years has different hashCode values
+        hashCode += yearPart;
+
+        return hashCode;
+    }
+
     private class RecordIterator implements Iterator<StudentRecord> {
 
         int tableIndex = 0;
-        int currentListIndex=0;
+        Iterator<StudentRecord> iterator;
 
-        List<StudentRecord> currentList = null;
         List<StudentRecord> studentRecordTable[];
 
         public RecordIterator( List<StudentRecord> studentRecordTable[] ) {
             this.studentRecordTable = studentRecordTable;
+            List<StudentRecord> studentRecords = studentRecordTable[tableIndex++];
+            while(studentRecords == null && tableIndex < studentRecordTable.length) {
+                studentRecords = studentRecordTable[tableIndex++];
+            }
+            if(studentRecords != null) {
+                iterator = studentRecords.iterator();
+            }
         }
 
         @Override
         public boolean hasNext() {
-
-            if(tableIndex < studentRecordTable.length) {
-
-                if( currentList !=  null && currentListIndex < currentList.size()) {
-                    return true;
+            boolean hasNext = iterator.hasNext();
+            if( !hasNext && tableIndex < studentRecordTable.length ) {
+                List<StudentRecord> studentRecords = studentRecordTable[tableIndex++];
+                while (studentRecords == null && tableIndex < studentRecordTable.length) {
+                    studentRecords = studentRecordTable[tableIndex++];
                 }
-
-                currentListIndex = 0;
-                while( (currentList = studentRecordTable[tableIndex++]) == null && tableIndex < tableSize ) {
-                    //keep iterating untill it find non null list or exhaust the table
+                if(studentRecords == null) {
+                    return false;
                 }
-                return currentList == null? false : true;
+                iterator = studentRecords.iterator();
+                return true;
             }
-            else
+            if(hasNext) {
+                return true;
+            }
+            else {
                 return false;
+            }
         }
 
         @Override
         public StudentRecord next() {
-             return currentList.get(currentListIndex++);
+             return iterator.next();
         }
     }
 
@@ -159,28 +240,14 @@ public class StudentHash {
             this.cgpa = cgpa;
         }
 
+        public void setCgpa(float cgpa) {
+            this.cgpa = cgpa;
+        }
+
         // as per assignment doc, we need a function HashId(). can we have that function to do hash calculation and hashcode() can call HashId()
         @Override
         public int hashCode() {
-        	if(studentId == null || studentId.length() < 8) {
-        		return -1;
-        	}
-        	int yearPart = Integer.parseInt(studentId.substring(0, 4));
-        	String deptCode = studentId.substring(4, 7);
-        	
-        	//Hash Code section
-        	int polynomialConst = 33;
-        	int hashCode = 0;
-        	
-        	// using the polynomial only for the department part because polynomial is done with finite bit representation 
-        	// and the value might overflow for higher powers of polynomialConst  
-        	for(int i =0; i < deptCode.length() -1; i++) {
-        		hashCode += ((int)deptCode.charAt(i) * Math.pow(polynomialConst, deptCode.length() - (i+1)));
-        	}
-        	//finally adding the year part so that the dept of subsequent years has different hashCode values
-        	hashCode += yearPart;
-        	
-            return hashCode;
+        	return HashId(studentId);
         }
         
         @Override

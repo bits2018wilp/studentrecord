@@ -24,13 +24,15 @@ public class StudentRecords {
         String line = null;
         while ((line = bfr.readLine()) != null) { // read the file until EOF
             String[] split = line.split(","); // line contains studentId,cgpa. split it into 2 parts.
+            if(split.length < 2) {
+                System.out.println("ignoring record: "+ line);
+            }
             studentRecords.insertStudentRec(studentRecords.studentHashTable, split[0], Float.valueOf(split[1]));
         }
         bfr.close();
 
         studentRecords.hallOfFame(studentRecords.studentHashTable, 6.0f);
         studentRecords.newCourseList(studentRecords.studentHashTable, 6.0f, 9.9f);
-
         studentRecords.getDeptWiseMaxAvg(studentRecords.studentHashTable);
 
         studentRecords.destroyHash(studentRecords.studentHashTable);
@@ -45,7 +47,10 @@ public class StudentRecords {
 
 
     public void insertStudentRec(StudentHash studentHashTable, String studentId, float value) {
-        studentHashTable.put(studentId, value);
+        boolean put = studentHashTable.put(studentId, value);
+        if(!put) {
+            System.out.println("duplicate record with Id: "+ studentId);
+        }
     }
 
     public void hallOfFame(StudentHash studentHashTable, float cgpa) throws FileNotFoundException {
