@@ -99,6 +99,18 @@ public class StudentHashTest {
         studentHash.put("2018ARC1234", 5);
 
         Assert.assertEquals(0, studentHash.getRehashCount());
+        //test fail. it means all the keys are going in same bucket !!
         Assert.assertEquals(4, studentHash.getBucketUsed(),0);
     }
+
+    @Test
+    public void testHashFunction() {
+        StudentHash studentHash = new StudentHash(1);
+        int h1 = studentHash.HashId("2018CSE1234");
+        int h2 = studentHash.HashId("2018ARC1234");
+        Assert.assertNotEquals(h1, h2);
+        System.out.println(h1%11);
+        System.out.println(h2%11);
+    }
+
 }
