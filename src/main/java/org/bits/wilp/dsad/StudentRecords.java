@@ -199,25 +199,6 @@ public class StudentRecords {
         return i;
     }
 
-
-    public static void main(String[] args) throws IOException {
-
-        //generateInput(); // utiltity to generate random input file
-
-        StudentHash studentHashTable = new StudentHash(31);
-
-        StudentRecords studentRecords = new StudentRecords();
-        studentRecords.initializeHash(studentHashTable); // initialize StudentHash with size 1000 buckets
-
-        studentRecords.populateHashTable(studentHashTable, "input/Input.txt");
-
-        studentRecords.hallOfFame(studentHashTable, 6.0f);
-        studentRecords.newCourseList(studentHashTable, 6.0f, 9.9f);
-        studentRecords.depAvg(studentHashTable);
-
-        studentRecords.destroyHash(studentHashTable);
-    }
-
     public class DeptInfo {
         private String deptName;
         private float totalCgpa;
@@ -252,4 +233,23 @@ public class StudentRecords {
             this.studentCount += studentCount;
         }
     }
+
+    public static void main(String[] args) throws IOException {
+
+        //generateInput(); // utiltity to generate random input file
+
+        StudentHash studentHashTable = new StudentHash(31);
+
+        StudentRecords studentRecords = new StudentRecords();
+        studentRecords.initializeHash(studentHashTable); // initialize StudentHash with size 1000 buckets
+
+        studentRecords.populateHashTable(studentHashTable, "input/Input.txt");
+
+        studentRecords.hallOfFame(studentHashTable, 6.0f);
+        studentRecords.newCourseList(studentHashTable, 6.0f, 9.9f);
+        studentRecords.depAvg(studentHashTable);
+
+        studentRecords.destroyHash(studentHashTable);
+    }
+
 }
