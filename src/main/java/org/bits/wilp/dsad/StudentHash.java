@@ -222,6 +222,10 @@ public class StudentHash {
      */
     public void deleteAll() {
         studentRecordTable = null;
+        totalRecords =0;
+        bucketUsed =0;
+        //tableSize =0;
+        rehashCount =0;
     }
 
 

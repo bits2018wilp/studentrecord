@@ -2,24 +2,18 @@ package org.bits.wilp.dsad;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class StudentRecords {
 
-    private StudentHash studentHashTable;
     public static final int curentYear = 2018;
 
-    public static void main(String[] args) throws IOException {
+    public StudentRecords() {
 
-        //generateInput(); // utiltity to generate random input file
+    }
 
-        StudentRecords studentRecords = new StudentRecords();
-        studentRecords.initHashTable(); // initialize StudentHash with size 1000 buckets
-
-        BufferedReader bfr = getInputFileReader(); // get input file reader. it has about 36k lines. 9000 records per dept.
+    public void populateHashTable(StudentHash studentHashTable, String fileName) throws IOException {
+        BufferedReader bfr = getInputFileReader(fileName); // get input file reader. it has about 36k lines. 9000 records per dept.
 
         String line = null;
         while ((line = bfr.readLine()) != null) { // read the file until EOF
@@ -27,24 +21,16 @@ public class StudentRecords {
             if(split.length < 2) {
                 System.out.println("ignoring record: "+ line);
             }
-            studentRecords.insertStudentRec(studentRecords.studentHashTable, split[0], Float.valueOf(split[1]));
+            insertStudentRec(studentHashTable, split[0], Float.valueOf(split[1]));
         }
         bfr.close();
-
-        studentRecords.hallOfFame(studentRecords.studentHashTable, 6.0f);
-        studentRecords.newCourseList(studentRecords.studentHashTable, 6.0f, 9.9f);
-        studentRecords.getDeptWiseMaxAvg(studentRecords.studentHashTable);
-
-        studentRecords.destroyHash(studentRecords.studentHashTable);
-
     }
 
-    private void initHashTable() {
+    public void initializeHash(StudentHash studentHash) {
     	//TODO: Shouldnt this N be a prime number to avoid collision ?
         //KASIF: yeah we can start with that to minimize collission.
-        studentHashTable = new StudentHash(31);
+        studentHash = new StudentHash(31);
     }
-
 
     public void insertStudentRec(StudentHash studentHashTable, String studentId, float value) {
         StudentHash.StudentRecord put = studentHashTable.put(studentId, value);
@@ -53,7 +39,7 @@ public class StudentRecords {
         }
     }
 
-    public void hallOfFame(StudentHash studentHashTable, float cgpa) throws FileNotFoundException {
+    public List<StudentHash.StudentRecord> hallOfFame(StudentHash studentHashTable, float cgpa) throws FileNotFoundException {
 
         String halloffameFile = System.getProperty("java.io.tmpdir")+ "halloffame.txt";
 
@@ -70,9 +56,10 @@ public class StudentRecords {
         }
         pw.close();
         System.out.println("hall of Fame has " + hallOfFame.size() + " records. Output is available at: "+ halloffameFile);
+        return hallOfFame;
     }
 
-    public void newCourseList(StudentHash studentHashTable, float mincgpa, float maxcgpa) throws FileNotFoundException {
+    public List<StudentHash.StudentRecord> newCourseList(StudentHash studentHashTable, float mincgpa, float maxcgpa) throws FileNotFoundException {
 
         List<StudentHash.StudentRecord> newCourse = new LinkedList<>();
         Iterator<StudentHash.StudentRecord> elementsIterator = studentHashTable.getElementsIterator();
@@ -91,28 +78,18 @@ public class StudentRecords {
         }
         pw.close();
         System.out.println("new course offering has " + newCourse.size() + " records. Output is available at: "+ courseOfferFile);
+        return newCourse;
     }
 
-    public void getDeptWiseMaxAvg(StudentHash studentHashTable) throws FileNotFoundException {
+    public List<DeptInfo> depAvg(StudentHash studentHashTable) throws FileNotFoundException {
 
         String departmentAverageFile = System.getProperty("java.io.tmpdir")+ "departmentAverage.txt";
         PrintWriter pw = new PrintWriter(new File(departmentAverageFile));
 
-        float csMax = 0.0f;
-        float csTotalcgpa = 0.0f;
-        int csTotalStudents = 0;
-
-        float eceMax = 0.0f;
-        float eceTotalcgpa = 0.0f;
-        int eceTotalStudents = 0;
-
-        float mecMax = 0.0f;
-        float mecTotalcgpa = 0.0f;
-        int mecTotalStudents = 0;
-
-        float arcMax = 0.0f;
-        float arcTotalcgpa = 0.0f;
-        int arcTotalStudents = 0;
+        DeptInfo cse = new DeptInfo("CSE");
+        DeptInfo ece = new DeptInfo("ECE");
+        DeptInfo mec = new DeptInfo("MEC");
+        DeptInfo arc = new DeptInfo("ARC");
 
         Iterator<StudentHash.StudentRecord> elementsIterator = studentHashTable.getElementsIterator();
 
@@ -122,40 +99,45 @@ public class StudentRecords {
                 String dept = getDeptCode(studentRecord.getStudentId());
                 switch (dept) {
                     case "CSE" :
-                        csMax = Math.max(csMax, studentRecord.getCgpa());
-                        csTotalcgpa += studentRecord.getCgpa();
-                        csTotalStudents++;
+                        cse.setMaxCgpa(studentRecord.getCgpa());
+                        cse.addToTotalCgpa(studentRecord.getCgpa());
+                        cse.addToStudentCount(1);
                         break;
                     case "ECE" :
-                        eceMax = Math.max(eceMax, studentRecord.getCgpa());
-                        eceTotalcgpa += studentRecord.getCgpa();
-                        eceTotalStudents++;
+                        ece.setMaxCgpa(studentRecord.getCgpa());
+                        ece.addToTotalCgpa(studentRecord.getCgpa());
+                        ece.addToStudentCount(1);
                         break;
                     case "MEC" :
-                        mecMax = Math.max(mecMax, studentRecord.getCgpa());
-                        mecTotalcgpa += studentRecord.getCgpa();
-                        mecTotalStudents++;
+                        mec.setMaxCgpa(studentRecord.getCgpa());
+                        mec.addToTotalCgpa(studentRecord.getCgpa());
+                        mec.addToStudentCount(1);
                         break;
                     case "ARC" :
-                        arcMax = Math.max(arcMax, studentRecord.getCgpa());
-                        arcTotalcgpa += studentRecord.getCgpa();
-                        arcTotalStudents++;
+                        arc.setMaxCgpa(studentRecord.getCgpa());
+                        arc.addToTotalCgpa(studentRecord.getCgpa());
+                        arc.addToStudentCount(1);
                         break;
                 }
             }
         }
-        System.out.println("Dept: CSE  TotalStudents: " + csTotalStudents + " Max: " + csMax + " Avg: " + (csTotalcgpa / csTotalStudents));
-        System.out.println("Dept: ECE  TotalStudents: " + eceTotalStudents + " Max: " + eceMax + " Avg: " + (eceTotalcgpa / eceTotalStudents));
-        System.out.println("Dept: MEC  TotalStudents: " + mecTotalStudents + " Max: " + mecMax + " Avg: " + (mecTotalcgpa / mecTotalStudents));
-        System.out.println("Dept: ARC  TotalStudents: " + arcTotalStudents + " Max: " + arcMax + " Avg: " + (arcTotalcgpa / arcTotalStudents));
 
-        pw.println("CSE," + csMax + "," + (csTotalcgpa / csTotalStudents));
-        pw.println("ECE," + eceMax + "," + (eceTotalcgpa / eceTotalStudents));
-        pw.println("MEC," + mecMax + "," + (mecTotalcgpa / mecTotalStudents));
-        pw.println("ARC," + arcMax + "," + (arcTotalcgpa / arcTotalStudents));
+        System.out.println("Dept: CSE  TotalStudents: " + cse.getStudentCount() + " Max: " + cse.getMaxCgpa() + " Avg: " + (cse.getTotalCgpa() / cse.getStudentCount()));
+        System.out.println("Dept: ECE  TotalStudents: " + ece.getStudentCount() + " Max: " + ece.getMaxCgpa() + " Avg: " + (ece.getTotalCgpa() / ece.getStudentCount()));
+        System.out.println("Dept: MEC  TotalStudents: " + mec.getStudentCount() + " Max: " + mec.getMaxCgpa() + " Avg: " + (mec.getTotalCgpa() / mec.getStudentCount()));
+        System.out.println("Dept: ARC  TotalStudents: " + arc.getStudentCount() + " Max: " + arc.getMaxCgpa() + " Avg: " + (arc.getTotalCgpa() / arc.getStudentCount()));
+
+
+        pw.println("CSE," + cse.getMaxCgpa() + "," + (cse.getTotalCgpa() / cse.getStudentCount()));
+        pw.println("ECE," + ece.getMaxCgpa() + "," + (ece.getTotalCgpa() / ece.getStudentCount()));
+        pw.println("MEC," + mec.getMaxCgpa() + "," + (mec.getTotalCgpa() / mec.getStudentCount()));
+        pw.println("ARC," + arc.getMaxCgpa() + "," + (arc.getTotalCgpa() / arc.getStudentCount()));
         pw.close();
 
         System.out.println("Dept wise Max/Avg Output is available at: "+ departmentAverageFile);
+        List<DeptInfo> deptInfos = new ArrayList<>();
+        deptInfos.add(cse); deptInfos.add(ece); deptInfos.add(mec); deptInfos.add(arc);
+        return deptInfos;
     }
 
     public String getDeptCode(String studentID) {
@@ -166,8 +148,8 @@ public class StudentRecords {
         return Integer.valueOf(studentId.substring(0, 4));
     }
     
-    private static BufferedReader getInputFileReader() throws FileNotFoundException {
-        URL resource = ClassLoader.getSystemClassLoader().getResource("input/Input.txt");
+    private static BufferedReader getInputFileReader(String fileName) throws FileNotFoundException {
+        URL resource = ClassLoader.getSystemClassLoader().getResource(fileName);
         File file = new File(resource.getPath());
         BufferedReader bfr = new BufferedReader(new FileReader(file));
         return bfr;
@@ -215,5 +197,59 @@ public class StudentRecords {
     private static int getRandomYear() {
         int i = 2000 + (int) (Math.random() * (2019 - 2000) + 1);
         return i;
+    }
+
+
+    public static void main(String[] args) throws IOException {
+
+        //generateInput(); // utiltity to generate random input file
+
+        StudentHash studentHashTable = new StudentHash(31);
+
+        StudentRecords studentRecords = new StudentRecords();
+        studentRecords.initializeHash(studentHashTable); // initialize StudentHash with size 1000 buckets
+
+        studentRecords.populateHashTable(studentHashTable, "input/Input.txt");
+
+        studentRecords.hallOfFame(studentHashTable, 6.0f);
+        studentRecords.newCourseList(studentHashTable, 6.0f, 9.9f);
+        studentRecords.depAvg(studentHashTable);
+
+        studentRecords.destroyHash(studentHashTable);
+    }
+
+    public class DeptInfo {
+        private String deptName;
+        private float totalCgpa;
+        private float maxCgpa = 0.0f;
+        private int studentCount;
+
+        public DeptInfo(String deptName) {
+            this.deptName = deptName;
+        }
+
+        public float getTotalCgpa() {
+            return totalCgpa;
+        }
+
+        public void addToTotalCgpa(float totalCgpa) {
+            this.totalCgpa += totalCgpa;
+        }
+
+        public float getMaxCgpa() {
+            return maxCgpa;
+        }
+
+        public void setMaxCgpa(float maxCgpa) {
+            this.maxCgpa = Math.max( this.maxCgpa, maxCgpa);
+        }
+
+        public int getStudentCount() {
+            return studentCount;
+        }
+
+        public void addToStudentCount(int studentCount) {
+            this.studentCount += studentCount;
+        }
     }
 }

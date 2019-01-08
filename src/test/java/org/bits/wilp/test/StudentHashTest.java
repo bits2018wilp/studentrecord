@@ -91,7 +91,7 @@ public class StudentHashTest {
 
     @Test
     public void testCompressionMap() {
-        StudentHash studentHash = new StudentHash(7);
+        StudentHash studentHash = new StudentHash(11);
 
         studentHash.put("2018CSE1234", 2);
         studentHash.put("2018MEC1234", 3);
@@ -109,8 +109,11 @@ public class StudentHashTest {
         int h1 = studentHash.HashId("2018CSE1234");
         int h2 = studentHash.HashId("2018ARC1234");
         Assert.assertNotEquals(h1, h2);
+
         System.out.println(h1%11);
         System.out.println(h2%11);
-    }
 
+        int h3 = studentHash.HashId("2018CSE1234");
+        Assert.assertEquals(h1 , h3);
+    }
 }
