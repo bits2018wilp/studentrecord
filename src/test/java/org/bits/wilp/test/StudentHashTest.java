@@ -90,8 +90,8 @@ public class StudentHashTest {
     }
 
     @Test
-    public void testRehashing() {
-        StudentHash studentHash = new StudentHash(11);
+    public void testCompressionMap() {
+        StudentHash studentHash = new StudentHash(7);
 
         studentHash.put("2018CSE1234", 2);
         studentHash.put("2018MEC1234", 3);
