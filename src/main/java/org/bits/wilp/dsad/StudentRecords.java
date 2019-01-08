@@ -47,9 +47,9 @@ public class StudentRecords {
 
 
     public void insertStudentRec(StudentHash studentHashTable, String studentId, float value) {
-        boolean put = studentHashTable.put(studentId, value);
-        if(!put) {
-            System.out.println("duplicate record with Id: "+ studentId);
+        StudentHash.StudentRecord put = studentHashTable.put(studentId, value);
+        if( put != null) {
+            System.out.println("existing record with Id: "+ studentId +" updated with cgpa: "+ value);
         }
     }
 
