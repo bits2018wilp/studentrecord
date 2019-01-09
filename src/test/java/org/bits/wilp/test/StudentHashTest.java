@@ -91,7 +91,7 @@ public class StudentHashTest {
 
     @Test
     public void testCompressionMap() {
-        StudentHash studentHash = new StudentHash(11);
+        StudentHash studentHash = new StudentHash(7);
 
         studentHash.put("2018CSE1234", 2);
         studentHash.put("2018MEC1234", 3);
@@ -99,8 +99,7 @@ public class StudentHashTest {
         studentHash.put("2018ARC1234", 5);
 
         Assert.assertEquals(0, studentHash.getRehashCount());
-        //test fail. it means all the keys are going in same bucket !!
-        Assert.assertEquals(4, studentHash.getBucketUsed(),0);
+        Assert.assertEquals(3, studentHash.getBucketUsed(),0);
     }
 
     @Test

@@ -98,13 +98,13 @@ public class StudentRecordsTest {
 
         Assert.assertNotNull( studentHashTable.get("2011CSE9995"));
 
-        studentRecords.destroyHash(studentHashTable);
+        studentRecords.destroyHash(studentHashTable); // hash table destroyed
 
         Assert.assertEquals(0, studentHashTable.size());
 
         boolean exceptionHappened = false;
         try {
-            Assert.assertEquals(null, studentHashTable.get("2011CSE9995"));
+            StudentHash.StudentRecord studentRecord = studentHashTable.get("2011CSE9995");// it should throw NPE because hashtable is null.
         }catch (NullPointerException ex) {
             Assert.assertNotNull(ex);
             exceptionHappened = true;

@@ -4,14 +4,30 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
+
+/**
+ * StudentRecords class uses StudentHash to store the records of studentID as key & cgpa as value.
+ *
+ * it has various function which university need based on the input like HallOFFame, offering new course and Dept wise Max/Avg cgpa.
+ *
+ * main() populates the hashTable with 36000 records spread across 4 dept & year from 2008 to 2018. *
+ * it then calls functions to get HallOfFame, newCourseOffering & Dept Avg/Max cgpa . in the end HashTable is destroyed and program terminates.
+ */
 public class StudentRecords {
 
     public static final int curentYear = 2018;
 
+    /**
+     * constructor
+     */
     public StudentRecords() {
-
     }
 
+    /**
+     * @param studentHashTable populate this hashtable from input file records
+     * @param fileName read this file to get input records and insert it into hashTable in the form of studentId as Key & cgpa as value
+     * @throws IOException
+     */
     public void populateHashTable(StudentHash studentHashTable, String fileName) throws IOException {
         BufferedReader bfr = getInputFileReader(fileName); // get input file reader. it has about 36k lines. 9000 records per dept.
 
@@ -26,12 +42,21 @@ public class StudentRecords {
         bfr.close();
     }
 
+    /**
+     * @param studentHash
+     * initialize hashTable with size of 31
+     */
     public void initializeHash(StudentHash studentHash) {
-    	//TODO: Shouldnt this N be a prime number to avoid collision ?
-        //KASIF: yeah we can start with that to minimize collission.
-        studentHash = new StudentHash(31);
+    	studentHash = new StudentHash(31);
     }
 
+    /**
+     * @param studentHashTable
+     * @param studentId
+     * @param value
+     *
+     * inserts studentId as Key & cgpa as value in hashTable
+     */
     public void insertStudentRec(StudentHash studentHashTable, String studentId, float value) {
         StudentHash.StudentRecord put = studentHashTable.put(studentId, value);
         if( put != null) {
@@ -39,6 +64,15 @@ public class StudentRecords {
         }
     }
 
+    /**
+     * @param studentHashTable
+     * @param cgpa
+     * @return
+     * @throws FileNotFoundException
+     *
+     * get list of students for Hall of Fame who has secured above the cgpa passed in function.
+     * write the list in output file.
+     */
     public List<StudentHash.StudentRecord> hallOfFame(StudentHash studentHashTable, float cgpa) throws FileNotFoundException {
 
         String halloffameFile = System.getProperty("java.io.tmpdir")+ "halloffame.txt";
@@ -59,6 +93,16 @@ public class StudentRecords {
         return hallOfFame;
     }
 
+    /**
+     * @param studentHashTable
+     * @param mincgpa
+     * @param maxcgpa
+     * @return
+     * @throws FileNotFoundException
+     *
+     * offer new courses to student who has secured between min & Max cgpa in last 5 years of passout.
+     * output is saved in file.
+     */
     public List<StudentHash.StudentRecord> newCourseList(StudentHash studentHashTable, float mincgpa, float maxcgpa) throws FileNotFoundException {
 
         List<StudentHash.StudentRecord> newCourse = new LinkedList<>();
@@ -81,6 +125,13 @@ public class StudentRecords {
         return newCourse;
     }
 
+    /**
+     * @param studentHashTable
+     * @return
+     * @throws FileNotFoundException
+     *
+     * calculate dept wise avg & max cgpa across all students and save theputput in file.
+     */
     public List<DeptInfo> depAvg(StudentHash studentHashTable) throws FileNotFoundException {
 
         String departmentAverageFile = System.getProperty("java.io.tmpdir")+ "departmentAverage.txt";
@@ -140,14 +191,36 @@ public class StudentRecords {
         return deptInfos;
     }
 
+
+    /**
+     * @param studentHash
+     * destroys the hashTable. after this any attempt to access hashTable will result in NullPointerException
+     */
+    public  void destroyHash(StudentHash studentHash) {
+        studentHash.deleteAll();
+    }
+
+    /**
+     * @param studentID
+     * @return dept code from studentId
+     */
     public String getDeptCode(String studentID) {
         return studentID.substring(4, 7);
     }
 
+    /**
+     * @param studentId
+     * @return addmission year from studentId
+     */
     private int getAdmissionYear(String studentId) {
         return Integer.valueOf(studentId.substring(0, 4));
     }
-    
+
+    /**
+     * @param fileName
+     * @return  file reader on the input file. used for population of hashtable at the start of program.
+     * @throws FileNotFoundException
+     */
     private static BufferedReader getInputFileReader(String fileName) throws FileNotFoundException {
         URL resource = ClassLoader.getSystemClassLoader().getResource(fileName);
         File file = new File(resource.getPath());
@@ -155,10 +228,16 @@ public class StudentRecords {
         return bfr;
     }
 
+    /**
+     * generates random input for testing.
+     * @throws FileNotFoundException
+     */
     private static void generateInput() throws FileNotFoundException {
 
+        String inputFile = System.getProperty("java.io.tmpdir")+ "input.txt";
+        System.out.println("input will be genearted at: " + inputFile);
         Random random = new Random();
-        PrintWriter pw = new PrintWriter(new File("D:/Input.txt"));
+        PrintWriter pw = new PrintWriter(new File(inputFile));
         for (int i = 1; i <= 4; i++) {
             int r = 1000;
             for (int j = 1000; j <= 9999; j++) {
@@ -169,12 +248,11 @@ public class StudentRecords {
         pw.close();
     }
 
-    public  void destroyHash(StudentHash studentHash) {
-        studentHash.deleteAll();
-    }
-
+    /**
+     * @param i
+     * @return  one of the dept like CSE, MEC, ECE or ARC
+     */
     public static String getRandomDept(int i) {
-        //   int i = 1 + (int)(Math.random() * (4-0) + 1);
 
         switch (i) {
             case 1:
@@ -189,16 +267,27 @@ public class StudentRecords {
         return "CSE";
     }
 
+    /**
+     * @param random
+     * @return  cgpa in the range of o to 9.9
+     */
     public static float getRandomCGPA(Random random) {
         float result = random.nextFloat() * (10 - 1);
         return result;
     }
 
+    /**
+     * @return random year between 2008 & 2018
+     */
     private static int getRandomYear() {
-        int i = 2000 + (int) (Math.random() * (2019 - 2000) + 1);
+        int i = 2007 + (int) (Math.random() * (2019 - 2007) + 1);
         return i;
     }
 
+
+    /**
+     * inner class to hold dept wise total cgpa, total students and max cgpa.
+     */
     public class DeptInfo {
         private String deptName;
         private float totalCgpa;
@@ -234,6 +323,18 @@ public class StudentRecords {
         }
     }
 
+    /**
+     * main function to run the program.
+     * it does following :
+     *      creates/initialize the hashTable
+     *      populate with records.
+     *      generates hallOFFame studentlist
+     *      generates list of student to offer new course
+     *      calculate dept avg & max cgpa
+     *      destroys the hashtable.
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
 
         //generateInput(); // utiltity to generate random input file
