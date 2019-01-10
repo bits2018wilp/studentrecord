@@ -35,11 +35,84 @@ public class StudentRecords {
         while ((line = bfr.readLine()) != null) { // read the file until EOF
             String[] split = line.split(","); // line contains studentId,cgpa. split it into 2 parts.
             if(split.length < 2) {
-                System.out.println("ignoring record: "+ line);
+                System.out.println("ignoring record: "+ line + " as both studentid and cgpa should be present and separated by comma ");
             }
-            insertStudentRec(studentHashTable, split[0], Float.valueOf(split[1]));
+            if(isValidRecord(split[0], split[1])) {
+                insertStudentRec(studentHashTable, split[0], Float.valueOf(split[1]));
+            } 
         }
         bfr.close();
+    }
+    
+    /*
+     * Method that validates the student id and the cgpa in the input record
+     * returns true of both student id and cgpa are of correct format
+     * if either of them are not of correct format then it returns false
+     * student id should be of YYYYAAADDDD format where YYYY should be from 2008 to 2018
+     * AAA should be one of CSC / MEC / ECE / ARC and DDDD should be a integer
+     * cgpa should be a valid float number
+     */
+    private boolean isValidRecord(String studentId, String cgpa) {
+    	//Validate if it is of length 11 - YYYYAAADDDD
+    	if(studentId.length() < 11) {
+    		System.out.println(String.format("ignoring the studentid %s as it is not of length 11  - YYYYAAADDDD format ", studentId));
+    		return false;
+    	}
+    	int i = 0;
+    	//Validate YYYY part of student Id is all digits
+    	for (; i < 4; i++) {
+            if (!Character.isDigit(studentId.charAt(i))) {
+            	System.out.println(String.format("ignoring the studentid %s as the year part of the id are not digits ", studentId));
+                return false;
+            }
+        }
+    	//Validate AAA part of student Id is alphabet
+    	for(; i < 7; i++) {
+    		if (!Character.isAlphabetic(studentId.charAt(i))) {
+    			System.out.println(String.format("ignoring the studentid %s as the dept part of the id are not alphabets ", studentId));
+                return false;
+            }
+    	}
+    	
+    	//Validate DDDD part of student Id is all digits
+    	for(; i < 11; i++) {
+    		if (!Character.isDigit(studentId.charAt(i))) {
+    			System.out.println(String.format("ignoring the studentid %s as the roll number part of the id are not digits ", studentId));
+                return false;
+            }
+    	}
+    	
+    	//Validate if YYYY is from 2008 to 2018
+    	int year = Integer.parseInt(studentId.substring(0, 4));
+    	if(year < 2008 || year > 2018) {
+    		System.out.println(String.format("ignoring the studentid %s as the year is not within 2008 and 2018 ", studentId));
+    		return false;
+    	}
+    	
+    	//Validate if AAA is one of CSE, MEC, ECE, ARC
+    	String dept = studentId.substring(4, 7);
+    	if(!(dept.equalsIgnoreCase("CSE") 
+    			|| dept.equalsIgnoreCase("MEC") 
+    			|| dept.equalsIgnoreCase("ECE") 
+    			|| dept.equalsIgnoreCase("ARC"))) {
+    		System.out.println(String.format("ignoring the studentid %s as the dept part is not CSE / MEC / ECE / ARC ", studentId));
+    		return false;
+    	}
+    	
+    	//Validate cgpa to be a valid float
+    	//variable to track if there is only one dot in the float number
+    	boolean foundDot = false;
+    	for (i = 0; i < cgpa.length(); i++) {
+            if (!Character.isDigit(cgpa.charAt(i))) {
+            	if('.' == cgpa.charAt(i) && !foundDot) {
+            		foundDot = true;
+            	} else {
+            		System.out.println(String.format("ignoring the studentid %s as the cgpa %s is not a valid float number ", studentId, cgpa));
+                    return false;
+            	}
+            }
+        }
+    	return true;
     }
 
     /**

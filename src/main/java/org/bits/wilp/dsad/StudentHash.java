@@ -93,16 +93,6 @@ public class StudentHash {
      */
     public StudentRecord put(StudentRecord studentRecord) {
         StudentRecord put = put(studentRecord, studentRecordTable);
-        //TODO: should we use bucketSize instead of totalRecords ?
-
-        //KASIF: loadfactor is n/N where n is total number of records across all buckets. we can take bucketSize but
-        // KASIF: then we will need to add up all bucket size before calculating load factor. however i agree, rehashing is not helping here.
-        //KASIF:  eventually we will end up creating lot of empty buckets after every rehashing.
-
-        //given that we have hashed based on year and dept code, 
-        //all the stud records of same year and dept are in the same bucket even after rehashing
-        //this way we can initial table size (initHash) with lower prime number say 101 instead of 1000 
-        // and segmentation fault may be avoided ?
         if(totalRecords/tableSize > 0.75) {
             reHash();
             rehashCount++;
