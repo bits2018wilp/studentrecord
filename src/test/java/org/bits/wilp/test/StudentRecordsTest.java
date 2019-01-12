@@ -6,9 +6,27 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 public class StudentRecordsTest {
+
+    @Test
+    public void testValidation() throws IOException {
+        StudentHash studentHashTable = new StudentHash(31);
+
+        StudentRecords studentRecords = new StudentRecords();
+        studentRecords.initializeHash(studentHashTable);
+
+        studentRecords.populateHashTable(studentHashTable, "input/validation-Input.txt");
+
+        Assert.assertEquals(4, studentHashTable.size());
+        Iterator<StudentHash.StudentRecord> itr = studentHashTable.getElementsIterator();
+        while(itr.hasNext()) {
+            System.out.println(itr.next());
+        }
+
+    }
 
     @Test
     public void testHashTablePopulation() throws IOException {

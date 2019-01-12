@@ -36,6 +36,7 @@ public class StudentRecords {
             String[] split = line.split(","); // line contains studentId,cgpa. split it into 2 parts.
             if(split.length < 2) {
                 System.out.println("ignoring record: "+ line + " as both studentid and cgpa should be present and separated by comma ");
+                continue;
             }
             if(isValidRecord(split[0], split[1])) {
                 insertStudentRec(studentHashTable, split[0], Float.valueOf(split[1]));
@@ -54,7 +55,7 @@ public class StudentRecords {
      */
     private boolean isValidRecord(String studentId, String cgpa) {
     	//Validate if it is of length 11 - YYYYAAADDDD
-    	if(studentId.length() < 11) {
+    	if(studentId.length() < 11 || studentId.length() > 11) {
     		System.out.println(String.format("ignoring the studentid %s as it is not of length 11  - YYYYAAADDDD format ", studentId));
     		return false;
     	}

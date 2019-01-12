@@ -238,6 +238,7 @@ public class StudentHash {
         }
         int yearPart = Integer.parseInt(studentId.substring(0, 4));
         String deptCode = studentId.substring(4, 7);
+        int rollNumber = Integer.parseInt(studentId.substring(7,11));
 
         //Hash Code section
         int polynomialConst = 33;
@@ -250,6 +251,7 @@ public class StudentHash {
         }
         //finally adding the year part so that the dept of subsequent years has different hashCode values
         hashCode += yearPart;
+        hashCode += rollNumber;
 
         return hashCode;
     }
