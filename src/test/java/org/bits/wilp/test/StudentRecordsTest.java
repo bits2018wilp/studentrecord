@@ -38,7 +38,7 @@ public class StudentRecordsTest {
 
         studentRecords.populateHashTable(studentHashTable, "input/testInput.txt");
 
-        Assert.assertEquals(9, studentHashTable.size());
+        Assert.assertEquals(11, studentHashTable.size());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class StudentRecordsTest {
 
         List<StudentHash.StudentRecord> records = studentRecords.hallOfFame(studentHashTable, 6.0f);
 
-        Assert.assertEquals(3, records.size());
+        Assert.assertEquals(5, records.size());
     }
 
     @Test
@@ -65,9 +65,9 @@ public class StudentRecordsTest {
         studentRecords.populateHashTable(studentHashTable, "input/testInput.txt");
 
         List<StudentHash.StudentRecord> records = studentRecords.newCourseList(studentHashTable, 6.0f, 9.0f);
-
-        Assert.assertEquals(2, records.size());
         System.out.println(records);
+        Assert.assertEquals(3, records.size());
+
     }
 
     @Test
@@ -82,14 +82,14 @@ public class StudentRecordsTest {
         List<StudentRecords.DeptInfo> deptInfos = studentRecords.depAvg(studentHashTable);
 
         StudentRecords.DeptInfo cse = deptInfos.get(0);
-        Assert.assertEquals(5.5633345f, cse.getMaxCgpa(), 0);
-        Assert.assertEquals(5.0633345f, cse.getTotalCgpa()/cse.getStudentCount(), 0);
-        Assert.assertEquals(2, cse.getStudentCount());
+        Assert.assertEquals(7.5633345f, cse.getMaxCgpa(), 0);
+        Assert.assertEquals(5.8966675f, cse.getTotalCgpa()/cse.getStudentCount(), 0);
+        Assert.assertEquals(3, cse.getStudentCount());
 
         StudentRecords.DeptInfo ece = deptInfos.get(1);
-        Assert.assertEquals(4.55112f, ece.getMaxCgpa(), 0);
-        Assert.assertEquals(3.5511198f, ece.getTotalCgpa()/ece.getStudentCount(), 0);
-        Assert.assertEquals(2, ece.getStudentCount());
+        Assert.assertEquals(7.5633345f, ece.getMaxCgpa(), 0);
+        Assert.assertEquals(4.8885245f, ece.getTotalCgpa()/ece.getStudentCount(), 0);
+        Assert.assertEquals(3, ece.getStudentCount());
 
         StudentRecords.DeptInfo mec = deptInfos.get(2);
         Assert.assertEquals(7.4326367f, mec.getMaxCgpa(), 0);
@@ -112,7 +112,7 @@ public class StudentRecordsTest {
 
         studentRecords.populateHashTable(studentHashTable, "input/testInput.txt");
 
-        Assert.assertEquals(9, studentHashTable.size());
+        Assert.assertEquals(11, studentHashTable.size());
 
         Assert.assertNotNull( studentHashTable.get("2011CSE9995"));
 

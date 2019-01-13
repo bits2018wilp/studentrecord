@@ -187,11 +187,14 @@ public class StudentRecords {
 
         while (elementsIterator.hasNext()) {
             StudentHash.StudentRecord studentRecord = elementsIterator.next();
-            if (studentRecord != null &&
-                    curentYear - getAdmissionYear(studentRecord.getStudentId()) >= 5 &&
+            if (studentRecord != null) {
+                    int admitYear =  getAdmissionYear(studentRecord.getStudentId());
+                    int passOutYear = admitYear + 4;
+                    if( passOutYear < curentYear && curentYear - passOutYear <= 5  &&
                     studentRecord.getCgpa() > mincgpa && studentRecord.getCgpa() < maxcgpa) {
-                pw.println(studentRecord.getStudentId()+","+studentRecord.getCgpa());
-                newCourse.add(studentRecord);
+                        pw.println(studentRecord.getStudentId() + "," + studentRecord.getCgpa());
+                        newCourse.add(studentRecord);
+                    }
             }
         }
         pw.close();
