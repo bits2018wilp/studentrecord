@@ -216,9 +216,10 @@ public class StudentHash {
 
 
     /**
-     * @param key
-     * @return hashcode as integer value which is calculated by aplying polynomial hashfunction.
-     * only YYYY & DeptCode is used to calculate hashcode.
+     * @param key (student_id)
+     * @return bucket array index where the element wil lbe stored based on the hashcode and compression map
+     * hashcode is calculated by applying polynomial hashfunction to the department and then adding the result with the year and roll number
+     * compression map using h(k) modulo table size.
      */
     public int HashId(String key) {
 
