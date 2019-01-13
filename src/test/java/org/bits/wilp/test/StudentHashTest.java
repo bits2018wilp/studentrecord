@@ -45,6 +45,8 @@ public class StudentHashTest {
         Assert.assertEquals("2018MEC1234", remove.getStudentId());
         Assert.assertEquals(3, remove.getCgpa(),0);
 
+        Assert.assertNull(studentHash.get("2018MEC1234"));
+
         //asert size after remove
         Assert.assertEquals(3, studentHash.size());
     }
@@ -114,5 +116,20 @@ public class StudentHashTest {
 
         int h3 = studentHash.HashId("2018CSE1234");
         Assert.assertEquals(h1 , h3);
+
+        int h4 = studentHash.HashId("2018MEC1234");
+        int h5 = studentHash.HashId("2018ECE1234");
+        int h6 = studentHash.HashId("2018ECE4234");
+
+        Assert.assertNotEquals(h1, h2);
+        Assert.assertNotEquals(h1, h4);
+        Assert.assertNotEquals(h1, h5);
+        Assert.assertNotEquals(h2, h4);
+        Assert.assertNotEquals(h2, h5);
+        Assert.assertNotEquals(h4, h5);
+        Assert.assertNotEquals(h1, h6);
+        Assert.assertNotEquals(h6, h2);
+        Assert.assertNotEquals(h6, h4);
+        Assert.assertNotEquals(h5, h6);
     }
 }
