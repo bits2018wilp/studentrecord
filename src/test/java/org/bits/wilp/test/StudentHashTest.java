@@ -45,6 +45,8 @@ public class StudentHashTest {
         Assert.assertEquals("2018MEC1234", remove.getStudentId());
         Assert.assertEquals(3, remove.getCgpa(),0);
 
+        Assert.assertNull(studentHash.get("2018MEC1234"));
+
         //asert size after remove
         Assert.assertEquals(3, studentHash.size());
     }
