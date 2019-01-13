@@ -60,7 +60,7 @@ public class StudentHash {
      * @return corresponding StudentRecord containing studentId & CGPA if the Id exist otherwise null
      */
     public StudentRecord get(String studentId) {
-        int tableIndex = getTableIndex(new StudentRecord(studentId, 0).hashCode());
+        int tableIndex = HashId(studentId);
         List<StudentRecord> studentRecordList = studentRecordTable[tableIndex];
 
         StudentRecord studentRecord = null;
@@ -92,7 +92,7 @@ public class StudentHash {
      */
     private void reHash() {
 
-        if(totalRecords/tableSize < LOAD_FACTOR) { // less ta
+        if(totalRecords/tableSize < LOAD_FACTOR) { // less than load factor
             return;
         }
 
@@ -121,8 +121,7 @@ public class StudentHash {
      */
     public StudentRecord put( List<StudentRecord> studentTable[] , String key, float value) {
 
-        int hashId = HashId(key); //get hashcode
-        int index = getTableIndex(hashId); // calculate bucket using compression map
+        int index = HashId(key); //get hashcode
         List<StudentRecord> studentRecordList = null;
 
         studentRecordList = studentTable[index];
@@ -155,7 +154,7 @@ public class StudentHash {
      */
     public StudentRecord remove(String studentId) {
 
-        int index = getTableIndex(HashId(studentId));
+        int index = HashId(studentId);
         List<StudentRecord> studentRecordList = null;
 
         studentRecordList = studentRecordTable[index];
@@ -194,15 +193,6 @@ public class StudentHash {
             }
         }
         return keys;
-    }
-
-    /**
-     *  Compression Map
-     * @param hashCode to calculate array index where the element should be put.
-     * @return  index by applying modulo function on absolute value of hashcode
-     */
-    private int getTableIndex(int hashCode) {
-        return (Math.abs(hashCode)%tableSize);
     }
 
     /**
@@ -252,7 +242,9 @@ public class StudentHash {
         hashCode += yearPart;
         hashCode += rollNumber;
 
-        return hashCode;
+        //Compression map to calculate array index where the element should be put
+        //by applying modulo function on absolute value of hashcode
+        return (Math.abs(hashCode)%tableSize);
 
     }
 

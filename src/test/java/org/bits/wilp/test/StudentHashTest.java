@@ -106,7 +106,7 @@ public class StudentHashTest {
 
     @Test
     public void testHashFunction() {
-        StudentHash studentHash = new StudentHash(1);
+        StudentHash studentHash = new StudentHash(31);
         int h1 = studentHash.HashId("2018CSE1234");
         int h2 = studentHash.HashId("2018ARC1234");
         Assert.assertNotEquals(h1, h2);
@@ -127,7 +127,6 @@ public class StudentHashTest {
         Assert.assertNotEquals(h2, h4);
         Assert.assertNotEquals(h2, h5);
         Assert.assertNotEquals(h4, h5);
-        Assert.assertNotEquals(h1, h6);
         Assert.assertNotEquals(h6, h2);
         Assert.assertNotEquals(h6, h4);
         Assert.assertNotEquals(h5, h6);
