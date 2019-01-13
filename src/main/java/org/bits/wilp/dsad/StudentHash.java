@@ -24,7 +24,7 @@ public class StudentHash {
     private int tableSize;
     private int rehashCount;
     private float bucketUsed;
-
+    private final static float LOAD_FACTOR = 0.75f;
     /*
      *   initialize hash table with size passed.
      */
@@ -82,51 +82,70 @@ public class StudentHash {
      * @return exisiting record if record was updated. null if the  record didnt exist.
      */
     public StudentRecord put(String key, float value) {
-        return put(new StudentRecord(key, value));
+        StudentRecord studentRecord = put(this.studentRecordTable, key, value);
+        reHash(); // check & do re hashing if required
+        return studentRecord;
     }
 
-
     /**
-     * @param studentRecord containing studentId & cgpa
-     * @return exisiting record if record was updated. null if the  record didnt exist.
-     * it also reHashes if loadFactor goes above 0.75
+     * increase the size of hashtable by double and put the elements by rehashing the key.
      */
-    public StudentRecord put(StudentRecord studentRecord) {
-        StudentRecord put = put(studentRecord, studentRecordTable);
-        if(totalRecords/tableSize > 0.75) {
-            reHash();
-            rehashCount++;
+    private void reHash() {
+
+        if(totalRecords/tableSize < LOAD_FACTOR) { // less ta
+            return;
         }
-        return put;
+
+        tableSize = tableSize * 2;
+        totalRecords =0;
+        bucketUsed = 0.0f;
+        List<StudentRecord> tmp[] = new LinkedList[tableSize];
+
+        for(List<StudentRecord> set : studentRecordTable) {
+            if(set != null) {
+                for(StudentRecord studentRecord : set) {
+                    put(tmp, studentRecord.studentId, studentRecord.cgpa);
+                }
+            }
+        }
+        studentRecordTable = tmp;
+        rehashCount++;
     }
 
-
     /**
-     * @param studentRecord containing studentId & CGPA
-     * @param studentRecordTable  the array of list which is hashtable where the student record will be inserted
-     * @return exisiting record if record was updated. null if the  record didnt exist.
+     * insert key & value in studentTable based in hashcode & compression map
+     * @param studentTable
+     * @param key
+     * @param value
+     * @return  previous record associated with key else null if new record.
      */
-    public StudentRecord put(StudentRecord studentRecord, List<StudentRecord>[] studentRecordTable) {
+    public StudentRecord put( List<StudentRecord> studentTable[] , String key, float value) {
 
-        int index = getTableIndex(studentRecord.hashCode());
+        int hashId = HashId(key); //get hashcode
+        int index = getTableIndex(hashId); // calculate bucket using compression map
         List<StudentRecord> studentRecordList = null;
 
-        studentRecordList = studentRecordTable[index];
+        studentRecordList = studentTable[index];
+
+        // if the bucket is null, initialize it.
         if(studentRecordList == null) {
             studentRecordList = new LinkedList<>();
-            studentRecordTable[index] = studentRecordList;
+            studentTable[index] = studentRecordList;
             bucketUsed++;
         }
+
+        //check if the record exist in bucket and update the value corresppnidng to it.
         for(StudentRecord sr : studentRecordList) {
-            if(sr.studentId.equals(studentRecord.studentId)) {
-                sr.setCgpa(studentRecord.getCgpa());
+            if(sr.studentId.equals(key)) {
+                sr.setCgpa(value);
                 return sr;
             }
         }
 
-        studentRecordList.add(studentRecord);
+        // basically new record. just add it in bucket.
+        studentRecordList.add(new StudentRecord(key, value));
         totalRecords++;
-        return null;
+        return null; // new key. so no previous record found with same key;
     }
 
     /**
@@ -178,33 +197,12 @@ public class StudentHash {
     }
 
     /**
+     *  Compression Map
      * @param hashCode to calculate array index where the element should be put.
      * @return  index by applying modulo function on absolute value of hashcode
      */
     private int getTableIndex(int hashCode) {
-        //Compression Map
         return (Math.abs(hashCode)%tableSize);
-    }
-
-
-    /**
-     * increase the size of hashtable by double and put the elements by rehashing the key.
-     */
-    private void reHash() {
-
-        tableSize = tableSize * 2;
-        totalRecords =0;
-        bucketUsed = 0.0f;
-        List<StudentRecord> tmp[] = new LinkedList[tableSize];
-
-        for(List<StudentRecord> set : studentRecordTable) {
-            if(set != null) {
-                for(StudentRecord studentRecord : set) {
-                    put(studentRecord, tmp);
-                }
-            }
-        }
-        studentRecordTable = tmp;
     }
 
     /**
@@ -228,17 +226,18 @@ public class StudentHash {
 
 
     /**
-     * @param studentId
+     * @param key
      * @return hashcode as integer value which is calculated by aplying polynomial hashfunction.
      * only YYYY & DeptCode is used to calculate hashcode.
      */
-    public int HashId(String studentId) {
-        if(studentId == null || studentId.length() < 8) {
+    public int HashId(String key) {
+
+        if(key == null || key.length() < 8) {
             return -1;
         }
-        int yearPart = Integer.parseInt(studentId.substring(0, 4));
-        String deptCode = studentId.substring(4, 7);
-        int rollNumber = Integer.parseInt(studentId.substring(7,11));
+        int yearPart = Integer.parseInt(key.substring(0, 4));
+        String deptCode = key.substring(4, 7);
+        int rollNumber = Integer.parseInt(key.substring(7,11));
 
         //Hash Code section
         int polynomialConst = 33;
@@ -254,6 +253,7 @@ public class StudentHash {
         hashCode += rollNumber;
 
         return hashCode;
+
     }
 
     /**

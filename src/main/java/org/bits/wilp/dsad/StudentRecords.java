@@ -418,7 +418,7 @@ public class StudentRecords {
         StudentRecords studentRecords = new StudentRecords();
         studentRecords.initializeHash(studentHashTable); // initialize StudentHash with size 31 buckets
 
-        studentRecords.populateHashTable(studentHashTable, "input/Input.txt");
+        studentRecords.populateHashTable(studentHashTable, "input/input.txt");
 
         studentRecords.hallOfFame(studentHashTable, 6.0f);
         studentRecords.newCourseList(studentHashTable, 6.0f, 9.9f);
