@@ -25,6 +25,8 @@ public class StudentHash {
     private int rehashCount;
     private float bucketUsed;
     private final static float LOAD_FACTOR = 0.75f;
+    private static int[] primeNumbers = new int[]{31,61,127,251,503,1013,2027,4091, 8017,16073, 32941, 64793, 75149, 85487, 96281};
+    private int primeIndex = 0;
     /*
      *   initialize hash table with size passed.
      */
@@ -96,7 +98,13 @@ public class StudentHash {
             return;
         }
 
-        tableSize = tableSize * 2;
+        if(primeIndex < primeNumbers.length) {
+        	tableSize = primeNumbers[primeIndex];
+        	primeIndex++;
+        } else {
+        	tableSize = tableSize*2; 
+        }	
+        
         totalRecords =0;
         bucketUsed = 0.0f;
         List<StudentRecord> tmp[] = new LinkedList[tableSize];
@@ -217,8 +225,8 @@ public class StudentHash {
 
     /**
      * @param key (student_id)
-     * @return bucket array index where the element wil lbe stored based on the hashcode and compression map
-     * hashcode is calculated by applying polynomial hashfunction to the department and then adding the result with the year and roll number
+     * @return bucket array index where the element will be stored based on the hashcode and compression map
+     * hashcode is calculated by hashCode = 33 * hashCode ^ key.charAt(i); which seem to get almost 65% of elements in O(1) time
      * compression map using h(k) modulo table size.
      */
     public int HashId(String key) {
@@ -226,26 +234,16 @@ public class StudentHash {
         if(key == null || key.length() < 8) {
             return -1;
         }
-        int yearPart = Integer.parseInt(key.substring(0, 4));
-        String deptCode = key.substring(4, 7);
-        int rollNumber = Integer.parseInt(key.substring(7,11));
-
-        //Hash Code section
-        int polynomialConst = 33;
+        
+        //Hashcode function
         int hashCode = 0;
-
-        // using the polynomial only for the department part because polynomial is done with finite bit representation
-        // and the value might overflow for higher powers of polynomialConst
-        for(int i =0; i < deptCode.length() -1; i++) {
-            hashCode += ((int)deptCode.charAt(i) * Math.pow(polynomialConst, deptCode.length() - (i+1)));
+        for (int i = 0; i < key.length(); i++) {
+        	hashCode = 33 * hashCode ^ key.charAt(i);
         }
-        //finally adding the year part so that the dept of subsequent years has different hashCode values
-        hashCode += yearPart;
-        hashCode += rollNumber;
 
         //Compression map to calculate array index where the element should be put
         //by applying modulo function on absolute value of hashcode
-        return (Math.abs(hashCode)%tableSize);
+        return Math.abs(hashCode)%tableSize;
 
     }
 
@@ -296,6 +294,32 @@ public class StudentHash {
         public StudentRecord next() {
             return iterator.next();
         }
+    }
+    
+    /*
+     * Prints the statistics of the bucket array like total buckets used, 
+     * number of buckets having collisions and the number of elements colliding
+     */
+    public void collisionAnalysis() {
+    	int count = 0;
+    	HashMap<Integer, Integer> countMap = new HashMap<Integer, Integer>();
+    	for(int i=0; i<this.studentRecordTable.length; i++) {
+    		if(this.studentRecordTable[i] != null) {
+    			List<StudentRecord> studentRecords = this.studentRecordTable[i];
+    			if(studentRecords.size() > 1)
+    				count++;
+    			if(countMap.get(studentRecords.size()) == null) {
+    				countMap.put(studentRecords.size(), 0);
+    			}
+    			int newCount = countMap.get(studentRecords.size());
+    			countMap.put(studentRecords.size(), ++newCount);
+    		}
+    	}
+    	System.out.println("Total Buckets used: " + this.studentRecordTable.length);
+    	System.out.println("Total Buckets having collision: " + count);
+    	for(Map.Entry<Integer, Integer> entrySet: countMap.entrySet()) {
+    		System.out.println(String.format("Number of buckets having %d elements is %d", entrySet.getKey(), entrySet.getValue()));
+    	}
     }
 
     /**
