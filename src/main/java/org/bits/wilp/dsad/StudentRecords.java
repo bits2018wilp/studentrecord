@@ -420,6 +420,7 @@ public class StudentRecords {
 
         StudentRecords studentRecords = new StudentRecords();
         studentRecords.initializeHash(studentHashTable); // initialize StudentHash with size 31 buckets
+        //studentHashTable.collisionAnalysis();
 
         studentRecords.populateHashTable(studentHashTable, "input/input.txt");
 
