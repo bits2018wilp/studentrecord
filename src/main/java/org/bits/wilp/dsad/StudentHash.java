@@ -317,8 +317,10 @@ public class StudentHash {
     	}
     	System.out.println("Total Buckets used: " + this.studentRecordTable.length);
     	System.out.println("Total Buckets having collision: " + count);
+    	System.out.println("Total Records: " + this.totalRecords);
     	for(Map.Entry<Integer, Integer> entrySet: countMap.entrySet()) {
-    		System.out.println(String.format("Number of buckets having %d elements is %d", entrySet.getKey(), entrySet.getValue()));
+    		System.out.println(String.format("Number of buckets having %d elements is %d - total records %d", 
+    				entrySet.getKey(), entrySet.getValue(), entrySet.getKey()*entrySet.getValue()));
     	}
     }
 

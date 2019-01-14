@@ -315,6 +315,15 @@ public class StudentRecords {
         System.out.println("input will be genearted at: " + inputFile);
         Random random = new Random();
         PrintWriter pw = new PrintWriter(new File(inputFile));
+        //To generate 8k valid records
+        /*for(int i = 2008; i<=2018; i++) {
+        	for(int j = 1; j<=4; j++) {
+        		for(int k = 0; k<=200; k++) {
+        			pw.println(String.format("%d%s%04d,%f", i, getRandomDept(j), k, getRandomCGPA(random)));
+        		}
+        	}
+        }*/
+        //To generate random records
         for (int i = 1; i <= 4; i++) {
             int r = 1000;
             for (int j = 1000; j <= 9999; j++) {
@@ -420,10 +429,9 @@ public class StudentRecords {
 
         StudentRecords studentRecords = new StudentRecords();
         studentRecords.initializeHash(studentHashTable); // initialize StudentHash with size 31 buckets
-        //studentHashTable.collisionAnalysis();
-
+        
         studentRecords.populateHashTable(studentHashTable, "input/input.txt");
-
+        //studentHashTable.collisionAnalysis();
         studentRecords.hallOfFame(studentHashTable, 6.0f);
         studentRecords.newCourseList(studentHashTable, 6.0f, 9.9f);
         studentRecords.depAvg(studentHashTable);
