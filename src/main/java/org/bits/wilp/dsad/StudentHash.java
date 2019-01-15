@@ -62,7 +62,12 @@ public class StudentHash {
      * @return corresponding StudentRecord containing studentId & CGPA if the Id exist otherwise null
      */
     public StudentRecord get(String studentId) {
-        int tableIndex = HashId(studentId);
+        int hashCode = HashId(studentId);
+
+        //Compression map to calculate array index where the element should be put
+        //by applying modulo function on absolute value of hashcode
+        int tableIndex =  Math.abs(hashCode)%tableSize;
+
         List<StudentRecord> studentRecordList = studentRecordTable[tableIndex];
 
         StudentRecord studentRecord = null;
@@ -129,7 +134,12 @@ public class StudentHash {
      */
     public StudentRecord put( List<StudentRecord> studentTable[] , String key, float value) {
 
-        int index = HashId(key); //get hashcode
+        int hashCode = HashId(key); //get hashcode
+
+        //Compression map to calculate array index where the element should be put
+        //by applying modulo function on absolute value of hashcode
+        int index  = Math.abs(hashCode)%tableSize;
+
         List<StudentRecord> studentRecordList = null;
 
         studentRecordList = studentTable[index];
@@ -162,7 +172,12 @@ public class StudentHash {
      */
     public StudentRecord remove(String studentId) {
 
-        int index = HashId(studentId);
+        int hashCode = HashId(studentId);
+
+        //Compression map to calculate array index where the element should be put
+        //by applying modulo function on absolute value of hashcode
+        int index =  Math.abs(hashCode)%tableSize;
+
         List<StudentRecord> studentRecordList = null;
 
         studentRecordList = studentRecordTable[index];
@@ -240,11 +255,7 @@ public class StudentHash {
         for (int i = 0; i < key.length(); i++) {
         	hashCode = 33 * hashCode ^ key.charAt(i);
         }
-
-        //Compression map to calculate array index where the element should be put
-        //by applying modulo function on absolute value of hashcode
-        return Math.abs(hashCode)%tableSize;
-
+        return hashCode;
     }
 
     /**

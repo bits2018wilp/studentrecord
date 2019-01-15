@@ -189,8 +189,9 @@ public class StudentRecords {
             StudentHash.StudentRecord studentRecord = elementsIterator.next();
             if (studentRecord != null) {
                     int admitYear =  getAdmissionYear(studentRecord.getStudentId());
-                    int passOutYear = admitYear + 4;
-                    if( passOutYear < curentYear && curentYear - passOutYear <= 5  &&
+                    int passOutYear = admitYear + 4;  // every course is a 4 year course.
+                // if current year is 2018, we take students passed out in 2018, 2017, 2016, 2015 & 2014 only
+                    if( passOutYear <= curentYear && curentYear - passOutYear < 5  &&
                     studentRecord.getCgpa() > mincgpa && studentRecord.getCgpa() < maxcgpa) {
                         pw.println(studentRecord.getStudentId() + "," + studentRecord.getCgpa());
                         newCourse.add(studentRecord);

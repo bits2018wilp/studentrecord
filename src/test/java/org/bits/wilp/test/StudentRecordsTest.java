@@ -8,6 +8,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class StudentRecordsTest {
 
@@ -38,7 +40,7 @@ public class StudentRecordsTest {
 
         studentRecords.populateHashTable(studentHashTable, "input/testInput.txt");
 
-        Assert.assertEquals(11, studentHashTable.size());
+        Assert.assertEquals(14, studentHashTable.size());
     }
 
     @Test
@@ -52,7 +54,7 @@ public class StudentRecordsTest {
 
         List<StudentHash.StudentRecord> records = studentRecords.hallOfFame(studentHashTable, 6.0f);
 
-        Assert.assertEquals(5, records.size());
+        Assert.assertEquals(9, records.size());
     }
 
     @Test
@@ -66,7 +68,24 @@ public class StudentRecordsTest {
 
         List<StudentHash.StudentRecord> records = studentRecords.newCourseList(studentHashTable, 6.0f, 9.0f);
         System.out.println(records);
-        Assert.assertEquals(3, records.size());
+        Assert.assertEquals(5, records.size());
+
+        List<String> collect = records.stream().map(new Function<StudentHash.StudentRecord, String>() {
+            @Override
+            public String apply(StudentHash.StudentRecord studentRecord) {
+                return studentRecord.getStudentId();
+            }
+        }).collect(Collectors.toList());
+
+        Assert.assertTrue(collect.contains("2011MEC9997"));
+        Assert.assertTrue(collect.contains("2012ARC9994"));
+        Assert.assertTrue(collect.contains("2014MEC9997"));
+        Assert.assertTrue(collect.contains("2013CSE9997"));
+        Assert.assertTrue(collect.contains("2010ECE9997"));
+
+        Assert.assertFalse(collect.contains("2008CSE9995"));
+        Assert.assertFalse(collect.contains("2009ECE9995"));
+        Assert.assertFalse(collect.contains("2016ECE9987"));
 
     }
 
@@ -83,17 +102,17 @@ public class StudentRecordsTest {
 
         StudentRecords.DeptInfo cse = deptInfos.get(0);
         Assert.assertEquals(7.5633345f, cse.getMaxCgpa(), 0);
-        Assert.assertEquals(5.8966675f, cse.getTotalCgpa()/cse.getStudentCount(), 0);
-        Assert.assertEquals(3, cse.getStudentCount());
+        Assert.assertEquals(6.2806597f, cse.getTotalCgpa()/cse.getStudentCount(), 0);
+        Assert.assertEquals(4, cse.getStudentCount());
 
         StudentRecords.DeptInfo ece = deptInfos.get(1);
         Assert.assertEquals(7.5633345f, ece.getMaxCgpa(), 0);
-        Assert.assertEquals(4.8885245f, ece.getTotalCgpa()/ece.getStudentCount(), 0);
-        Assert.assertEquals(3, ece.getStudentCount());
+        Assert.assertEquals(5.90617f, ece.getTotalCgpa()/ece.getStudentCount(), 0);
+        Assert.assertEquals(5, ece.getStudentCount());
 
         StudentRecords.DeptInfo mec = deptInfos.get(2);
         Assert.assertEquals(7.4326367f, mec.getMaxCgpa(), 0);
-        Assert.assertEquals(5.4326367f, mec.getTotalCgpa()/mec.getStudentCount(), 0);
+        Assert.assertEquals(7.4326367f, mec.getTotalCgpa()/mec.getStudentCount(), 0);
         Assert.assertEquals(2, mec.getStudentCount());
 
         StudentRecords.DeptInfo arc = deptInfos.get(3);
@@ -112,7 +131,7 @@ public class StudentRecordsTest {
 
         studentRecords.populateHashTable(studentHashTable, "input/testInput.txt");
 
-        Assert.assertEquals(11, studentHashTable.size());
+        Assert.assertEquals(14, studentHashTable.size());
 
         Assert.assertNotNull( studentHashTable.get("2011CSE9995"));
 
