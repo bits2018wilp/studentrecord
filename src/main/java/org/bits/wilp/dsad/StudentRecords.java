@@ -175,6 +175,7 @@ public class StudentRecords {
      * @throws FileNotFoundException
      *
      * offer new courses to student who has secured between min & Max cgpa in last 5 years of passout.
+     * if current year is 2018, we take students passed out in 2018, 2017, 2016, 2015 & 2014 only
      * output is saved in file.
      */
     public List<StudentHash.StudentRecord> newCourseList(StudentHash studentHashTable, float mincgpa, float maxcgpa) throws FileNotFoundException {
