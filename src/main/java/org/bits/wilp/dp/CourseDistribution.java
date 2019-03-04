@@ -62,16 +62,16 @@ public class CourseDistribution {
         if(students == null || students.isEmpty() || courses == null || courses.isEmpty() )
             return;
 
-        List<String> cat = null;
+        List<String> localAssignment = null;
 
         for(String st : students) {
 
-            cat = assignment == null? new ArrayList<>() : assignment;
+            localAssignment = assignment == null? new ArrayList<>() : assignment;
 
             for (String c : choice.get(st)) {
-                if (courses.contains(c) && studentOrCourseIsUnAssigned(st, c, cat) ) {
+                if (courses.contains(c) && studentOrCourseIsUnAssigned(st, c, localAssignment) ) {
 
-                    cat.add(st + "#" + c);
+                    localAssignment.add(st + "#" + c);
                     counter.incrementAndGet();
 
                     ArrayList<String> studentLeft = new ArrayList<>();
@@ -82,11 +82,11 @@ public class CourseDistribution {
                     courseLeft.addAll(courses);
                     courseLeft.remove(c);
 
-                    assign(studentLeft, courseLeft, choice, cat, counter);
+                    assign(studentLeft, courseLeft, choice, localAssignment, counter);
                 }
             }
         }
-        System.out.println(cat);
+        System.out.println(localAssignment);
     }
 
     private boolean studentOrCourseIsUnAssigned(String st, String c, List<String> cat) {
