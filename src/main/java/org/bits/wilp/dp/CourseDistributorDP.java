@@ -23,7 +23,8 @@ public class CourseDistributorDP {
 
         List<String> assignment  =  null;
         List<List<String>> possibleAssignments = new ArrayList<>();
-        cd.dp(new ArrayList<>(choiceMap.keySet()), choiceMap, assignment, possibleAssignments, courseSet.size());
+        List<List<String>> allPossibleAssignments = new ArrayList<>();
+        cd.dp(new ArrayList<>(choiceMap.keySet()), choiceMap, assignment, possibleAssignments, allPossibleAssignments, choiceMap.keySet().size());
 
         for(List<String> list : possibleAssignments) {
             System.out.println(list);
@@ -32,7 +33,7 @@ public class CourseDistributorDP {
 
     }
 
-    public void dp(List<String> students, Map<String, List<String>> choice, List<String> assignment, List<List<String>> possibleAssignments, int size ) {
+    public void dp(List<String> students, Map<String, List<String>> choice, List<String> assignment, List<List<String>> possibleAssignments, List<List<String>> allPossibleAssignments, int size ) {
 
         if(assignment != null && assignment.size() == size) {
             possibleAssignments.add(assignment);
@@ -57,7 +58,8 @@ public class CourseDistributorDP {
             else
                 tmpAssignment = new ArrayList<>(assignment);
 
-            if ( courseIsNotAssigned(c, tmpAssignment))  {
+            if ( courseIsNotAssigned(c, tmpAssignment) )  {
+              //  System.out.println("in");
 
                 tmpAssignment.add(st + "#" + c);
 
@@ -65,7 +67,9 @@ public class CourseDistributorDP {
                 studentLeft.addAll(students);
                 studentLeft.remove(st);
 
-                dp(studentLeft, choice, tmpAssignment, possibleAssignments, size);
+                allPossibleAssignments.add(tmpAssignment);
+
+                dp(studentLeft, choice, tmpAssignment, possibleAssignments, allPossibleAssignments, size);
             }
             else {
                 //System.out.println("course " + c + " cannot be assigned to " + st +". discarding computed result: "+ tmpAssignment);
