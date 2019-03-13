@@ -43,7 +43,7 @@ class CourseAllocationDP
 
         // If not everyone is wearing a cap and also there are no more
         // caps left to process, so there is no way, thus return 0;
-        if (course > 100) return 0;
+        if (course > 3) return 0;
 
         // If we already have solved this subproblem, return the answer.
         if (dp[student][course] != -1){
@@ -57,6 +57,7 @@ class CourseAllocationDP
 
         // size is the total number of persons having cap with id i.
         //int size = capList[i].size();
+        System.out.println("course:" + course);
         int size = courseToPersonsMap.get(course).size();
 
         // So, assign one by one ith cap to all the possible persons
