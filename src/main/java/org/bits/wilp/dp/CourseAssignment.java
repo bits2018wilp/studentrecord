@@ -94,6 +94,9 @@ class CourseAssignment {
                 students.add(studentCounter);
             }
         }
+        if(studentCounter < TOTAL_STUDENTS) {
+            throw new IllegalArgumentException("not all students are given in input");
+        }
         return studentCounter;
     }
 
