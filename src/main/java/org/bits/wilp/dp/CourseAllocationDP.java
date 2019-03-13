@@ -3,6 +3,8 @@ package org.bits.wilp.dp;
 // Java program to find number of ways to wear hats
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -73,7 +75,7 @@ class CourseAllocationDP
             else {
                 int nextStudent =  student | (1 << courseToPersonsMap.get(course).get(j));
                // int newMask =  courseToPersonsMap.get(i).get(j);
-                System.out.println("nextStudent: "+ nextStudent);
+               // System.out.println("nextStudent: "+ nextStudent);
                 ways += countWaysUtil( nextStudent, course+1);
             }
            // ways %= MOD;
@@ -96,33 +98,45 @@ class CourseAllocationDP
         System.out.println();
     }
 
-    // Reads n lines from standard input for current test case
-    static void countWays(int n) throws Exception
+    static void initAndReadInput() throws Exception
     {
+        /*// initializing vector array
+        for (int i = 0; i < capList.length; i++) {
+            //capList[i] = new ArrayList<>();
+            courseToPersonsMap.put(i, new ArrayList<>());
+        }*/
+
         //----------- READ INPUT --------------------------
         String str;
-        String split[];
-        int x;
+        int studentCounter = -1;
 
-        for (int i=0; i<n; i++)
+        BufferedReader bfr = new BufferedReader(new FileReader(new File("D:\\intellijWS\\studentrecord\\src\\main\\resources\\input\\assignment2\\student-choice2")));
+
+        while ( (str = bfr.readLine())  != null)
         {
-            str = br.readLine();
-            split = str.split(" ");
-
-            // while there are words in the split[]
+            String split[] = str.split("/");
+            if(split.length ==1) throw new IllegalArgumentException("student need to provide at least 1 choice for course");
+            int student = -1;
+            //1st one is student name. basically we are creating a map of course to student list
             for (int j = 0; j < split.length; j++) {
-                // add the ith person in the list of cap if with id x
-                x = Integer.parseInt(split[j]);
-//                capList[x].add(i);
-                courseToPersonsMap.get(x).add(i);
-            }
 
+                if( j==0) {
+                    student = Integer.parseInt(split[j]);
+                    continue;
+                }
+                int x = Integer.parseInt(split[j]);
+                if( courseToPersonsMap.get(x) == null) {
+                    courseToPersonsMap.put(x, new ArrayList<>());
+                }
+                courseToPersonsMap.get(x).add(student);
+            }
+            studentCounter++;
         }
+        System.out.println(courseToPersonsMap);
         //----------------------------------------------------
 
-        // All mask is used to check of all persons
-        // are included or not, set all n bits as 1
-        allmask = Double.valueOf(Math.pow(2, n)).intValue()-1; //1 << n) - 1;
+        // 2^n to tell whether student took the course or not and -1 because index start from 0
+        allmask = Double.valueOf(Math.pow(2, studentCounter)).intValue()-1;
 
         // Initialize all entries in dp as -1
         for (int[] is : dp) {
@@ -138,16 +152,6 @@ class CourseAllocationDP
     // Driver method
     public static void main(String args[]) throws Exception
     {
-        int n; // number of persons in every test case
-
-        // initializing vector array
-        for (int i = 0; i < capList.length; i++) {
-            //capList[i] = new ArrayList<>();
-            courseToPersonsMap.put(i, new ArrayList<>());
-        }
-
-
-        n = Integer.parseInt(br.readLine());
-        countWays(n);
+                initAndReadInput();
     }
 }
