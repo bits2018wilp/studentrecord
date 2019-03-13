@@ -97,19 +97,19 @@ class CourseAssignment {
         return studentCounter;
     }
 
-    private int findPossibleAssignments(int mask, int course)
+    private int findPossibleAssignments(int student, int course)
     {
         // if all students have been assigned the course then return
-        if (mask == allCombinations) return 1;
+        if (student == allCombinations) return 1;
 
         // if courses have exhausted but students are still left then this is not a possible assignment.
         if (course > TOTAL_COURSE) return 0;
 
         // use previous solution if it exist
-        if (assignments[mask][course] != -1) return assignments[mask][course];
+        if (assignments[student][course] != -1) return assignments[student][course];
 
         // case when the course is not icnluded in our assignment
-        int assignment = findPossibleAssignments(mask, course+1);
+        int assignment = findPossibleAssignments(student, course+1);
 
         //students having course
         int students = courseToStudentMap.get(course).size();
@@ -118,11 +118,11 @@ class CourseAssignment {
         for (int j = 0; j < students; j++)
         {
             // this means the student has already being assigned this course
-            if ((mask == (1 << courseToStudentMap.get(course).get(j))) ) continue;
+            if ((student == (1 << courseToStudentMap.get(course).get(j))) ) continue;
 
             // try assigning course to student.
-            else assignment += findPossibleAssignments(mask | (1 << courseToStudentMap.get(course).get(j)), course+1);
+            else assignment += findPossibleAssignments(student | (1 << courseToStudentMap.get(course).get(j)), course+1);
         }
-        return assignments[mask][course] = assignment;
+        return assignments[student][course] = assignment;
     }
 }
