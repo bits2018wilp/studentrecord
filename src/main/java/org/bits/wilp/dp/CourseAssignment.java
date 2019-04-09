@@ -6,31 +6,38 @@ import java.util.*;
 
 class CourseAssignment {
 
-    static int TOTAL_COURSE = 11;
-    static int TOTAL_STUDENTS = 11;
+    static int TOTAL_COURSE = 3;
+    static int TOTAL_STUDENTS = 3;
 
     int assignments[][] ;
 
     int allCombinations;
     Map<Integer, List<Integer>> courseToStudentMap = new HashMap<>();
     Map<String, Integer> courseNameToIdMap = new HashMap<>();
+    private int rows;
+    private int cols;
 
     public static void main(String args[]) throws Exception
     {
+        String file = "D:\\intellijWS\\studentrecord\\src\\main\\resources\\input\\assignment2\\student-choice3";
         CourseAssignment courseAssignment = new CourseAssignment();
-        courseAssignment.initAndReadInput();
+        courseAssignment.initAndReadInput(file);
+        int possibleAssignments = courseAssignment.findPossibleAssignments(0, 1);
+        System.out.println("Total Possible Combinations: " + possibleAssignments);
     }
 
-    void initAndReadInput() throws Exception
+    void initAndReadInput(String filePath) throws Exception
     {
-        for(int i=0;i<TOTAL_COURSE+1;i++) {
+        for(int i=0; i<TOTAL_COURSE+1; i++) {
             courseToStudentMap.put(i, new ArrayList<>());
         }
-        assignments = new int[Double.valueOf(Math.pow(2, TOTAL_STUDENTS)).intValue()+1][TOTAL_COURSE+1];
+        rows = Double.valueOf(Math.pow(2, TOTAL_STUDENTS)).intValue()+1;
+        cols = TOTAL_COURSE+1;
+        assignments = new int[rows][cols];
         allCombinations = ( Double.valueOf(Math.pow(2, TOTAL_STUDENTS)).intValue()  - 1);
 
         initCourseNameToIdMap();
-        readInput();
+        readInput(filePath);
 
         // set all cell in matrix as -1
         for (int[] ass : assignments) {
@@ -38,30 +45,30 @@ class CourseAssignment {
                 ass[i] = -1;
             }
         }
-
-        System.out.println("Total Possible Combinations: " + findPossibleAssignments(0, 1));
     }
 
     private void initCourseNameToIdMap() {
         int id =0;
         courseNameToIdMap.put("DM",++id);
         courseNameToIdMap.put("SDA",++id);
-        courseNameToIdMap.put("WMC",++id);
-        courseNameToIdMap.put("CC",++id);
+       // courseNameToIdMap.put("WMC",++id);
+        //courseNameToIdMap.put("CC",++id);
         courseNameToIdMap.put("NLP",++id);
-        courseNameToIdMap.put("AI",++id);
+        /*courseNameToIdMap.put("AI",++id);
         courseNameToIdMap.put("IP",++id);
         courseNameToIdMap.put("GM",++id);
         courseNameToIdMap.put("EC",++id);
         courseNameToIdMap.put("ML",++id);
-        courseNameToIdMap.put("BD",++id);
+        courseNameToIdMap.put("BD",++id);*/
     }
 
-    private int readInput() throws Exception{
-        BufferedReader bfr = new BufferedReader(new FileReader("D:\\intellijWS\\studentrecord\\src\\main\\resources\\input\\assignment2\\student-choice2"));
+    private int readInput(String filePath) throws Exception{
+
+        BufferedReader bfr = new BufferedReader(new FileReader(filePath));
         int studentCounter=-1;
         String line;
         Set<String> uniqueStudents = new HashSet<>();
+
         while( (line = bfr.readLine()) != null)
         {
             studentCounter++;
@@ -94,14 +101,15 @@ class CourseAssignment {
                 students.add(studentCounter);
             }
         }
-        if(studentCounter < TOTAL_STUDENTS) {
-            throw new IllegalArgumentException("not all students are given in input");
+        if(studentCounter+1 < TOTAL_STUDENTS || studentCounter+1>TOTAL_STUDENTS) {
+            throw new IllegalArgumentException("not all students are given in input. students/TotalStudents  "+  (studentCounter+1) +"/"+ TOTAL_STUDENTS);
         }
         return studentCounter;
     }
 
     private int findPossibleAssignments(int student, int course)
     {
+        //debugPrint(assignments);
         // if all students have been assigned the course then return
         if (student == allCombinations) return 1;
 
@@ -121,11 +129,26 @@ class CourseAssignment {
         for (int j = 0; j < students; j++)
         {
             // this means the student has already being assigned this course
-            if ((student == (1 << courseToStudentMap.get(course).get(j))) ) continue;
+            if ( (student == (1 << courseToStudentMap.get(course).get(j))) ) continue;
 
-            // try assigning course to student.
+            // try assigning course to student and count the number of ways courses can be assigned
             else assignment += findPossibleAssignments(student | (1 << courseToStudentMap.get(course).get(j)), course+1);
         }
-        return assignments[student][course] = assignment;
+
+        assignments[student][course] = assignment;
+        debugPrint(assignments);
+        return assignment;
+    }
+
+    private void debugPrint(int[][] assignments) {
+        System.out.println("assignments: ");
+
+        for (int i = 0; i < rows; i++) {
+            System.out.println();
+            for (int j = 0; j < cols; j++) {
+                System.out.print(assignments[i][j] + " ");
+            }
+        }
+        System.out.println();
     }
 }
