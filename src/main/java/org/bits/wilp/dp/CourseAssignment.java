@@ -6,8 +6,8 @@ import java.util.*;
 
 class CourseAssignment {
 
-    static int TOTAL_COURSE = 3;
-    static int TOTAL_STUDENTS = 3;
+    static int TOTAL_COURSE = 11;
+    static int TOTAL_STUDENTS = 11;
 
     int assignments[][] ;
 
@@ -19,7 +19,7 @@ class CourseAssignment {
 
     public static void main(String args[]) throws Exception
     {
-        String file = "D:\\intellijWS\\studentrecord\\src\\main\\resources\\input\\assignment2\\student-choice3";
+        String file = "D:\\intellijWS\\studentrecord\\src\\main\\resources\\input\\assignment2\\student-choice";
         CourseAssignment courseAssignment = new CourseAssignment();
         courseAssignment.initAndReadInput(file);
         int possibleAssignments = courseAssignment.findPossibleAssignments(0, 1);
@@ -51,15 +51,15 @@ class CourseAssignment {
         int id =0;
         courseNameToIdMap.put("DM",++id);
         courseNameToIdMap.put("SDA",++id);
-       // courseNameToIdMap.put("WMC",++id);
-        //courseNameToIdMap.put("CC",++id);
+        courseNameToIdMap.put("WMC",++id);
+        courseNameToIdMap.put("CC",++id);
         courseNameToIdMap.put("NLP",++id);
-        /*courseNameToIdMap.put("AI",++id);
+        courseNameToIdMap.put("AI",++id);
         courseNameToIdMap.put("IP",++id);
         courseNameToIdMap.put("GM",++id);
         courseNameToIdMap.put("EC",++id);
         courseNameToIdMap.put("ML",++id);
-        courseNameToIdMap.put("BD",++id);*/
+        courseNameToIdMap.put("BD",++id);
     }
 
     private int readInput(String filePath) throws Exception{
@@ -136,7 +136,7 @@ class CourseAssignment {
         }
 
         assignments[student][course] = assignment;
-        debugPrint(assignments);
+        //debugPrint(assignments);
         return assignment;
     }
 
