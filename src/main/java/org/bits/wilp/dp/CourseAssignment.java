@@ -128,11 +128,12 @@ class CourseAssignment {
         // try to assign course the course to students which are not assigned.
         for (int j = 0; j < students; j++)
         {
-            // this means the student has already being assigned this course
-            if ( (student == (1 << courseToStudentMap.get(course).get(j))) ) continue;
+            Integer studentCourseChoice = courseToStudentMap.get(course).get(j);
+            // this means the student has already being assigned a course and cant be assinged this one
+            if ( (student & (1 << studentCourseChoice)) !=0 ) continue;
 
-            // try assigning course to student and count the number of ways courses can be assigned
-            else assignment += findPossibleAssignments(student | (1 << courseToStudentMap.get(course).get(j)), course+1);
+            // set student mask bit and count the number of ways courses can be assigned
+            else assignment += findPossibleAssignments(student | (1 << studentCourseChoice), course+1);
         }
 
         assignments[student][course] = assignment;
